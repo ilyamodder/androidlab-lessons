@@ -1,40 +1,68 @@
 package itis.homework.parallelrequests;
 
 import android.app.Fragment;
+import android.content.AsyncTaskLoader;
+import android.content.Context;
+import android.content.Loader;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import itis.homework.parallelrequests.app.AppDelegate;
+import itis.homework.parallelrequests.network.RequestsService;
+
 /**
  * @author Artur Vasilov
  */
-public class MainFragment extends Fragment {
+public class MainFragment extends Fragment implements Loader.OnLoadCompleteListener<Void> {
+
+    private boolean mIsConfigLoaded;
+    private boolean mIsAuthLoaded;
+    private boolean mIsMessagesLoaded;
+
+    private RequestsService mRequestsService;
+
+    private ConfigLoader mConfigLoader;
+    private AuthLoader mAuthLoader;
+
+    private FriendsLoader mFriendsLoader;
+    private PostsLoader mPostsLoader;
+    private GroupsLoader mGroupsLoader;
+    private MessagesLoader mMessageLoader;
+
+    private PhotosLoader mPhotosLoader;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        /*
-            TODO : put your code somewhere here
-            1) Use RequestsService reference above to process all requests you need
-            2) Be sure to user correct order of request:
-            2.1) Photos request must be executed only after messages request has finished
-            2.2) Friends, posts, messages and group request must be executed only after auth and config requests has finished
+        mRequestsService = AppDelegate.get(getActivity()).getRequestsService();
 
-            Do not change any code here, except MainFragment class and possible MainActivity.
-            Of course you can add as many new classes as you want.
+        mConfigLoader = new ConfigLoader(getActivity());
+        mAuthLoader = new AuthLoader(getActivity());
+        mFriendsLoader = new FriendsLoader(getActivity());
+        mPostsLoader = new PostsLoader(getActivity());
+        mGroupsLoader = new GroupsLoader(getActivity());
+        mMessageLoader = new MessagesLoader(getActivity());
+        mPhotosLoader = new PhotosLoader(getActivity());
 
-            If you'll execute all requests consequentially it'll take about 47 second - it isn't thing you want.
-            Best result you can achieve is 23 seconds. Good luck!
+        mConfigLoader.registerListener(0, this);
+        mAuthLoader.registerListener(1, this);
+        mFriendsLoader.registerListener(2, this);
+        mPostsLoader.registerListener(3, this);
+        mGroupsLoader.registerListener(4, this);
+        mMessageLoader.registerListener(5, this);
+        mPhotosLoader.registerListener(6, this);
 
-            I've provided simple version with consequential execution in SampleService class.
-            I don't force you to use it, it's just a sample.
-         */
+        mIsConfigLoaded = false;
+        mIsAuthLoaded = false;
+        mIsMessagesLoaded = false;
 
-        //TODO : do not forget to remove it when you implement requests yourself
-        SampleService.start(getActivity());
+        mConfigLoader.forceLoad();
+        mAuthLoader.forceLoad();
+
     }
 
     @Nullable
@@ -46,5 +74,118 @@ public class MainFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+    }
+
+    @Override
+    public void onLoadComplete(Loader<Void> loader, Void data) {
+
+        switch (loader.getId()) {
+            case 0:
+                mIsConfigLoaded = true;
+                break;
+            case 1:
+                mIsAuthLoaded = true;
+                break;
+            case 5:
+                mIsMessagesLoaded = true;
+                break;
+        }
+
+        if ((loader instanceof ConfigLoader || loader instanceof AuthLoader)
+                && mIsConfigLoaded && mIsAuthLoaded) {
+            mFriendsLoader.forceLoad();
+            mPostsLoader.forceLoad();
+            mGroupsLoader.forceLoad();
+            mMessageLoader.forceLoad();
+        }
+
+        if (mIsMessagesLoaded) {
+            mPhotosLoader.forceLoad();
+        }
+    }
+
+    public class ConfigLoader extends AsyncTaskLoader<Void> {
+
+        public ConfigLoader(Context context) {
+            super(context);
+        }
+
+        @Override
+        public Void loadInBackground() {
+            mRequestsService.config();
+            return null;
+        }
+    }
+    public class AuthLoader extends AsyncTaskLoader<Void> {
+
+        public AuthLoader(Context context) {
+            super(context);
+        }
+
+        @Override
+        public Void loadInBackground() {
+            mRequestsService.auth();
+            return null;
+        }
+    }
+    public class FriendsLoader extends AsyncTaskLoader<Void> {
+
+        public FriendsLoader(Context context) {
+            super(context);
+        }
+
+        @Override
+        public Void loadInBackground() {
+            mRequestsService.friends();
+            return null;
+        }
+    }
+    public class PostsLoader extends AsyncTaskLoader<Void> {
+
+        public PostsLoader(Context context) {
+            super(context);
+        }
+
+        @Override
+        public Void loadInBackground() {
+            mRequestsService.posts();
+            return null;
+        }
+    }
+    public class GroupsLoader extends AsyncTaskLoader<Void> {
+
+        public GroupsLoader(Context context) {
+            super(context);
+        }
+
+        @Override
+        public Void loadInBackground() {
+            mRequestsService.groups();
+            return null;
+        }
+    }
+    public class MessagesLoader extends AsyncTaskLoader<Void> {
+
+        public MessagesLoader(Context context) {
+            super(context);
+        }
+
+        @Override
+        public Void loadInBackground() {
+            mRequestsService.messages();
+            return null;
+        }
+    }
+    public class PhotosLoader extends AsyncTaskLoader<Void> {
+
+        public PhotosLoader(Context context) {
+            super(context);
+        }
+
+        @Override
+        public Void loadInBackground() {
+            mRequestsService.photos();
+            return null;
+        }
     }
 }
