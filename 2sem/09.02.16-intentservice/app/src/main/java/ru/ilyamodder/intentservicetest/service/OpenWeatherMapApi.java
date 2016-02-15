@@ -1,8 +1,7 @@
 package ru.ilyamodder.intentservicetest.service;
 
-import retrofit.http.GET;
-import retrofit.http.Query;
-import ru.ilyamodder.intentservicetest.BuildConfig;
+import retrofit2.http.GET;
+import retrofit2.http.Query;
 import ru.ilyamodder.intentservicetest.classes.Weather;
 
 /**
