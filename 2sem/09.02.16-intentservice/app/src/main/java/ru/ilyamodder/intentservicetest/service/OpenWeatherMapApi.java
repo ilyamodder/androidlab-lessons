@@ -1,5 +1,6 @@
 package ru.ilyamodder.intentservicetest.service;
 
+import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
 import ru.ilyamodder.intentservicetest.classes.Weather;
@@ -10,5 +11,5 @@ import ru.ilyamodder.intentservicetest.classes.Weather;
 public interface OpenWeatherMapApi {
 
     @GET("/forecast?mode=json")
-    Weather get5DaysForecast(@Query("city") String city);
+    Call<Weather> get5DaysForecast(@Query("city") String city);
 }
