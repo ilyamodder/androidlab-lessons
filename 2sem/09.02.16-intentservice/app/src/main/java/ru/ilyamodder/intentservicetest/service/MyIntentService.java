@@ -42,7 +42,7 @@ public class MyIntentService extends IntentService {
         receiver.send(STATUS_RUNNING, new Bundle());
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(BuildConfig.API_URL + BuildConfig.API_VERSION)
+                .baseUrl(BuildConfig.API_URL + BuildConfig.API_VERSION + "/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 

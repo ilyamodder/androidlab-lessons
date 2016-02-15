@@ -12,7 +12,7 @@ public class Weather implements Serializable {
     @SerializedName("list")
     private List<Data> mList;
 
-    private class Data implements Serializable {
+    public class Data implements Serializable {
         @SerializedName("main")
         private WeatherData mData;
         @SerializedName("dt")
@@ -27,7 +27,7 @@ public class Weather implements Serializable {
         }
     }
 
-    private class WeatherData implements Serializable {
+    public class WeatherData implements Serializable {
         @SerializedName("temp")
         private double mTemperature;
         @SerializedName("humidity")
