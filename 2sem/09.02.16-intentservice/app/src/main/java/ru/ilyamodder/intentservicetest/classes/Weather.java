@@ -2,16 +2,17 @@ package ru.ilyamodder.intentservicetest.classes;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Created by ilya on 15.02.16.
  */
-public class Weather {
+public class Weather implements Serializable {
     @SerializedName("list")
     private List<Data> mList;
 
-    private class Data {
+    private class Data implements Serializable {
         @SerializedName("main")
         private WeatherData mData;
         @SerializedName("dt")
@@ -26,7 +27,7 @@ public class Weather {
         }
     }
 
-    private class WeatherData {
+    private class WeatherData implements Serializable {
         @SerializedName("temp")
         private double mTemperature;
         @SerializedName("humidity")
