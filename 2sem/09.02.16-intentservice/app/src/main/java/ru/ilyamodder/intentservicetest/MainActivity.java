@@ -28,6 +28,7 @@ public class MainActivity extends AppCompatActivity implements MyResultReceiver.
 
         Intent intent = new Intent(this, MyIntentService.class);
         intent.putExtra("receiver", resultReceiver);
+        intent.putExtra("request", "getWeather");
         startService(intent);
 
         mTextView.setText("Loading...");
