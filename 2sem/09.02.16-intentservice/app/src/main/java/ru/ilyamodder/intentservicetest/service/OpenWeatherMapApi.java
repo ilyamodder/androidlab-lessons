@@ -11,6 +11,6 @@ import ru.ilyamodder.intentservicetest.classes.Weather;
  */
 public interface OpenWeatherMapApi {
 
-    @GET("forecast?mode=json&appid=" + BuildConfig.API_KEY)
+    @GET("forecast?mode=json&units=metric&appid=" + BuildConfig.API_KEY)
     Call<Weather> get5DaysForecast(@Query("q") String city);
 }
