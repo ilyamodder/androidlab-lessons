@@ -10,6 +10,9 @@ import android.os.Bundle;
 import android.os.ResultReceiver;
 import android.os.SystemClock;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -89,8 +92,29 @@ public class MyIntentService extends IntentService {
                     db.endTransaction();
                 }
 
+                Weather dbWeather = new Weather();
+                List<Weather.Data> dataList = new ArrayList<>();
+
+                Cursor c = db.query(TABLE_WEATHER, null, null, null, null, null, null);
+
+                while (c.moveToNext()) {
+                    Weather.Data data = new Weather.Data();
+                    data.setDatestamp(getDate(c));
+
+                    Weather.WeatherData weatherData = new Weather.WeatherData();
+
+                    weatherData.setHumidity(getHumidity(c));
+                    weatherData.setTemperature(getTemp(c));
+
+                    data.setData(weatherData);
+                    dataList.add(data);
+                }
+
+                dbWeather.setList(dataList);
+                c.close();
+
                 Bundle bundle = new Bundle();
-                bundle.putSerializable("response", weather);
+                bundle.putSerializable("response", dbWeather);
                 receiver.send(STATUS_FINISHED, bundle);
             }
 

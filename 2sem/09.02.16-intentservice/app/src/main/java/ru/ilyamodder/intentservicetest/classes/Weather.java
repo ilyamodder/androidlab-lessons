@@ -12,7 +12,7 @@ public class Weather implements Serializable {
     @SerializedName("list")
     private List<Data> mList;
 
-    public class Data implements Serializable {
+    public static class Data implements Serializable {
         @SerializedName("main")
         private WeatherData mData;
         @SerializedName("dt")
@@ -25,9 +25,17 @@ public class Weather implements Serializable {
         public long getDatestamp() {
             return mDatestamp;
         }
+
+        public void setData(WeatherData mData) {
+            this.mData = mData;
+        }
+
+        public void setDatestamp(long mDatestamp) {
+            this.mDatestamp = mDatestamp;
+        }
     }
 
-    public class WeatherData implements Serializable {
+    public static class WeatherData implements Serializable {
         @SerializedName("temp")
         private double mTemperature;
         @SerializedName("humidity")
@@ -40,9 +48,21 @@ public class Weather implements Serializable {
         public int getHumidity() {
             return mHumidity;
         }
+
+        public void setTemperature(double mTemperature) {
+            this.mTemperature = mTemperature;
+        }
+
+        public void setHumidity(int mHumidity) {
+            this.mHumidity = mHumidity;
+        }
     }
 
     public List<Data> getList() {
         return mList;
+    }
+
+    public void setList(List<Data> mList) {
+        this.mList = mList;
     }
 }

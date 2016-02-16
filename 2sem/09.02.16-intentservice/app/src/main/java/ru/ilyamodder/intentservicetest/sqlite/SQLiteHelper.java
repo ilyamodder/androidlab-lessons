@@ -25,7 +25,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("create table " + TABLE_WEATHER +
                 "(" + FIELD_ID + " integer primary key autoincrement, " +
-                FIELD_DATE + " integer, " + FIELD_HUMIDITY + " double, " +
+                FIELD_DATE + " integer, " + FIELD_HUMIDITY + " integer, " +
                 FIELD_TEMPERATURE + " double);");
     }
 
@@ -42,7 +42,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         return c.getDouble(c.getColumnIndex(FIELD_TEMPERATURE));
     }
 
-    public static double getHumidity(Cursor c) {
-        return c.getDouble(c.getColumnIndex(FIELD_HUMIDITY));
+    public static int getHumidity(Cursor c) {
+        return c.getInt(c.getColumnIndex(FIELD_HUMIDITY));
     }
 }
