@@ -1,5 +1,6 @@
 package ru.ilyamodder.intentservicetest.view;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
@@ -9,6 +10,7 @@ import android.widget.TextView;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import ru.ilyamodder.intentservicetest.R;
 import ru.ilyamodder.intentservicetest.classes.Weather;
 
 /**
@@ -17,14 +19,16 @@ import ru.ilyamodder.intentservicetest.classes.Weather;
 public class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.WeatherViewHolder> {
 
     private Weather weather;
+    private Context context;
 
-    public WeatherAdapter(Weather weather) {
+    public WeatherAdapter(Context context, Weather weather) {
         this.weather = weather;
+        this.context = context;
     }
 
     @Override
     public WeatherViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+        LayoutInflater inflater = LayoutInflater.from(context);
         return new WeatherViewHolder(inflater.inflate(android.R.layout.simple_list_item_2,
                 parent, false));
     }
@@ -37,7 +41,7 @@ public class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.WeatherV
     @Override
     public void onBindViewHolder(WeatherViewHolder holder, int position) {
         Weather.Data data = weather.getList().get(position);
-        holder.mText1.setText(data.getData().getTemperature() + "°C");
+        holder.mText1.setText(context.getString(R.string.temperature, data.getData().getTemperature()));
         holder.mText2.setText(DateFormat.format("dd.MM hh:mm", data.getDatestamp()));
     }
 

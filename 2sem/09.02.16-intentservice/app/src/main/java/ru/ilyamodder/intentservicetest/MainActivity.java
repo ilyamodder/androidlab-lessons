@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.TextView;
 
 import com.vlonjatg.progressactivity.ProgressActivity;
 
@@ -57,12 +56,12 @@ public class MainActivity extends AppCompatActivity implements MyResultReceiver.
                 break;
             case STATUS_FINISHED:
                 Weather weather = (Weather) data.getSerializable("response");
-                mRecyclerView.setAdapter(new WeatherAdapter(weather));
+                mRecyclerView.setAdapter(new WeatherAdapter(this, weather));
                 mProgress.showContent();
                 break;
             case STATUS_ERROR:
-                mProgress.showError(null, "Ошибка загрузки!", "Попробуйте попытку позднее",
-                        "Повторить", new View.OnClickListener() {
+                mProgress.showError(null, getString(R.string.error_caption), getString(R.string.error_message),
+                        getString(R.string.error_button_label), new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
                                 sendRequest();
