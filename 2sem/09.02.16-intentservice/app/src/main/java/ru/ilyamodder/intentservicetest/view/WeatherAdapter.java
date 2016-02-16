@@ -18,30 +18,30 @@ import ru.ilyamodder.intentservicetest.classes.Weather;
  */
 public class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.WeatherViewHolder> {
 
-    private Weather weather;
-    private Context context;
+    private Weather mWeather;
+    private Context mContext;
 
     public WeatherAdapter(Context context, Weather weather) {
-        this.weather = weather;
-        this.context = context;
+        this.mWeather = weather;
+        this.mContext = context;
     }
 
     @Override
     public WeatherViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        LayoutInflater inflater = LayoutInflater.from(context);
+        LayoutInflater inflater = LayoutInflater.from(mContext);
         return new WeatherViewHolder(inflater.inflate(android.R.layout.simple_list_item_2,
                 parent, false));
     }
 
     @Override
     public int getItemCount() {
-        return weather.getList().size();
+        return mWeather.getList().size();
     }
 
     @Override
     public void onBindViewHolder(WeatherViewHolder holder, int position) {
-        Weather.Data data = weather.getList().get(position);
-        holder.mText1.setText(context.getString(R.string.temperature, data.getData().getTemperature()));
+        Weather.Data data = mWeather.getList().get(position);
+        holder.mText1.setText(mContext.getString(R.string.temperature, data.getData().getTemperature()));
         holder.mText2.setText(DateFormat.format("dd.MM hh:mm", data.getDatestamp()));
     }
 
