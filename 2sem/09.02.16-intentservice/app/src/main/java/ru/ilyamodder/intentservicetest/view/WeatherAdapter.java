@@ -41,7 +41,7 @@ public class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.WeatherV
     @Override
     public void onBindViewHolder(WeatherViewHolder holder, int position) {
         Weather.Data data = mWeather.getList().get(position);
-        holder.mText1.setText(mContext.getString(R.string.temperature, data.getData().getTemperature()));
+        holder.mText1.setText(String.format("%.2f °C", data.getData().getTemperature()));
         holder.mText2.setText(DateFormat.format("dd.MM hh:mm", data.getDatestamp()));
     }
 

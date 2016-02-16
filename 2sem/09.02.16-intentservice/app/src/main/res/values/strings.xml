@@ -3,7 +3,6 @@
     <string name="error_caption">Ошибка загрузки!</string>
     <string name="error_message">Попробуйте попытку позднее</string>
     <string name="error_button_label">Повторить</string>
-    <string name="temperature">%1$ °C</string>
 
 
 </resources>
