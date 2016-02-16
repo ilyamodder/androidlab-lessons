@@ -1,13 +1,29 @@
 package ru.ilyamodder.intentservicetest.service;
 
 import android.app.IntentService;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.ResultReceiver;
 import android.os.SystemClock;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+import ru.ilyamodder.intentservicetest.BuildConfig;
+import ru.ilyamodder.intentservicetest.classes.Weather;
 import ru.ilyamodder.intentservicetest.receiver.MyResultReceiver;
+import ru.ilyamodder.intentservicetest.sqlite.SQLiteHelper;
+
+import static ru.ilyamodder.intentservicetest.sqlite.SQLiteHelper.*;
 
 
 public class MyIntentService extends IntentService {
@@ -32,12 +48,82 @@ public class MyIntentService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         final ResultReceiver receiver = intent.getParcelableExtra("receiver");
-        new Thread() {
+        receiver.send(STATUS_RUNNING, new Bundle());
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(BuildConfig.API_URL + BuildConfig.API_VERSION + "/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        OpenWeatherMapApi api = retrofit.create(OpenWeatherMapApi.class);
+
+        String request = intent.getStringExtra("request");
+
+        switch (request) {
+            case "getWeather":
+                processWeatherRequest(intent, receiver, api);
+        }
+    }
+
+    private void processWeatherRequest(Intent intent, final ResultReceiver receiver, final OpenWeatherMapApi api) {
+        String city = intent.getStringExtra("city");
+
+        SQLiteHelper sqLiteHelper = new SQLiteHelper(this);
+        final SQLiteDatabase db = sqLiteHelper.getWritableDatabase();
+
+        api.get5DaysForecast(city).enqueue(new Callback<Weather>() {
             @Override
-            public void run() {
-                SystemClock.sleep(2000);
-                receiver.send(STATUS_FINISHED, new Bundle());
+            public void onResponse(Call<Weather> call, Response<Weather> response) {
+                Weather weather = response.body();
+                db.delete(TABLE_WEATHER, "1=1", null);
+
+                ContentValues cv = new ContentValues();
+                db.beginTransaction();
+                try {
+                    for (Weather.Data data : weather.getList()) {
+                        cv.clear();
+                        cv.put(FIELD_DATE, data.getDatestamp());
+                        cv.put(FIELD_TEMPERATURE, data.getData().getTemperature());
+                        cv.put(FIELD_HUMIDITY, data.getData().getHumidity());
+                        db.insert(TABLE_WEATHER, null, cv);
+                    }
+                    db.setTransactionSuccessful();
+                } finally {
+                    db.endTransaction();
+                }
+
+                Weather dbWeather = new Weather();
+                List<Weather.Data> dataList = new ArrayList<>();
+
+                Cursor c = db.query(TABLE_WEATHER, null, null, null, null, null, null);
+
+                while (c.moveToNext()) {
+                    Weather.Data data = new Weather.Data();
+                    data.setDatestamp(getDate(c));
+
+                    Weather.WeatherData weatherData = new Weather.WeatherData();
+
+                    weatherData.setHumidity(getHumidity(c));
+                    weatherData.setTemperature(getTemp(c));
+
+                    data.setData(weatherData);
+                    dataList.add(data);
+                }
+
+                dbWeather.setList(dataList);
+                c.close();
+
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("response", dbWeather);
+                receiver.send(STATUS_FINISHED, bundle);
             }
-        }.start();
+
+            @Override
+            public void onFailure(Call<Weather> call, Throwable t) {
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("error", t);
+                receiver.send(STATUS_ERROR, bundle);
+            }
+        });
     }
 }

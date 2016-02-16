@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">IntentServiceTest</string>
+    <string name="error_caption">Ошибка загрузки!</string>
+    <string name="error_message">Попробуйте попытку позднее</string>
+    <string name="error_button_label">Повторить</string>
+
+
 </resources>
