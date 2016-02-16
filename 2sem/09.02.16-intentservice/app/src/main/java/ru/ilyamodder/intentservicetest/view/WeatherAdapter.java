@@ -1,12 +1,11 @@
 package ru.ilyamodder.intentservicetest.view;
 
 import android.support.v7.widget.RecyclerView;
+import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
-import java.util.Date;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -39,7 +38,7 @@ public class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.WeatherV
     public void onBindViewHolder(WeatherViewHolder holder, int position) {
         Weather.Data data = weather.getList().get(position);
         holder.mText1.setText(data.getData().getTemperature() + "°C");
-        holder.mText2.setText(new Date(data.getDatestamp()).toString());
+        holder.mText2.setText(DateFormat.format("dd.MM hh:mm", data.getDatestamp()));
     }
 
     public static class WeatherViewHolder extends RecyclerView.ViewHolder {

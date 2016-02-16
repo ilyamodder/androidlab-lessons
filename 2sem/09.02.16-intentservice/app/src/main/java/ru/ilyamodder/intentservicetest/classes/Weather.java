@@ -16,13 +16,13 @@ public class Weather implements Serializable {
         @SerializedName("main")
         private WeatherData mData;
         @SerializedName("dt")
-        private int mDatestamp;
+        private long mDatestamp;
 
         public WeatherData getData() {
             return mData;
         }
 
-        public int getDatestamp() {
+        public long getDatestamp() {
             return mDatestamp;
         }
     }
